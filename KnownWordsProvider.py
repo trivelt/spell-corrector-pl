@@ -8,7 +8,7 @@ class KnownWordsProviderUsingRAM(object):
 
     def initialize(self, unigrams_file_path):
         self.words = dict()
-        self.N = 0
+        self.N = 0.0
         f = open(unigrams_file_path, 'r')
         for line in f:
             freq, word = line_to_pair(line)
@@ -20,6 +20,9 @@ class KnownWordsProviderUsingRAM(object):
         return set(w for w in words if w in self.words)
 
     def P(self, word):
-        p = self.words[word] / self.N
-        # print("P(" + word + ")=" + str(p) + ", freq=" + str(self.words[word]))
-        return p
+        if word in self.words:
+            p = self.words[word] / self.N
+            # print("P(" + word + ")=" + str(p) + ", freq=" + str(self.words[word]))
+            return p
+        else:
+            return 0

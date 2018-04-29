@@ -50,7 +50,7 @@ class SpellCorrector(object):
         return set(e1)
 
     def _edits1(self, word):
-        letters    = 'abcdefghijklmnopqrstuvwxyz'
+        letters    = 'aąbcćdeęfghijklłmnńoópqrsśtuvwxyzżź'
         splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
         deletes    = [L + R[1:]               for L, R in splits if R]
         transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
