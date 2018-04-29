@@ -4,6 +4,7 @@
 import unittest
 from MockKnownWordsProvider import MockKnownWordsProvider
 from SpellCorrector import SpellCorrector
+import NGramsUtils
 
 
 class SpellCorrectorEditsTest(unittest.TestCase):
@@ -90,6 +91,19 @@ class SpellCorrectorCorrectionTest(unittest.TestCase):
 
         corrected = self.sut.correction("honika")
         self.assert_equal_utf("konika", corrected)
+
+
+class NGramsUtilsTest(unittest.TestCase):
+    def test_should_return_correct_freq(self):
+        line = "123456 test"
+        freq, _ = NGramsUtils.line_to_pair(line)
+        self.assertEqual(123456, freq)
+
+    def test_should_return_correct_word(self):
+        line = "123456 test"
+        _, word = NGramsUtils.line_to_pair(line)
+        self.assertEqual("test", word)
+
 
 if __name__ == '__main__':
     unittest.main()
