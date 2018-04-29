@@ -5,7 +5,7 @@ class MockKnownWordsProvider(object):
 
     def initialize(self, words):
         self.words = words
-        self.N = len(self.words)
+        self.N = float(sum(words.values()))
 
     def known(self, words):
         return set(w for w in words if w in self.words)

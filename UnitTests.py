@@ -6,7 +6,7 @@ from MockKnownWordsProvider import MockKnownWordsProvider
 from SpellCorrector import SpellCorrector
 
 
-class SpellCorrectorTest(unittest.TestCase):
+class SpellCorrectorEditsTest(unittest.TestCase):
     def setUp(self):
         self.words_provider = MockKnownWordsProvider()
         self.sut = SpellCorrector(self.words_provider)
@@ -15,9 +15,6 @@ class SpellCorrectorTest(unittest.TestCase):
         container_members_str = '[' + ", ".join([str(elem) for elem in container]) + ']' if print_container else "container"
         for member in member_list:
             self.assertIn(member, container, str(member) + " not in " + container_members_str)
-
-    def assert_equal_utf(self, first, second):
-        self.assertEqual(first, second, str(first) + " != " + str(second))
 
     def test_edit1(self):
         word = "hello"
@@ -40,12 +37,12 @@ class SpellCorrectorTest(unittest.TestCase):
         example_edits = ('hekko', 'tallo', 'hhhllo', 'belko')
         self.assert_contains_list(result, example_edits, print_container=False)
 
-    def test_polish_words(self):
+    def test_diacritics_words(self):
         word = 'czesc'
         result = self.sut._add_diacritics(word)
 
         edit1_corrections = ('ćzesc',
-                             'cżesc',# 'cźesc',
+                             'cżesc',  # 'cźesc',
                              'częsc',
                              'cześc',
                              'czesć')
@@ -54,11 +51,45 @@ class SpellCorrectorTest(unittest.TestCase):
         self.assert_contains_list(result, edit2_corrections)
         self.assertFalse(word in result)
 
-    def test_correction(self):
-        self.words_provider.initialize({"że": 1})
+
+class SpellCorrectorCorrectionTest(unittest.TestCase):
+    def setUp(self):
+        self.words_provider = MockKnownWordsProvider()
+        self.sut = SpellCorrector(self.words_provider)
+
+    def assert_equal_utf(self, first, second):
+        self.assertEqual(first, second, str(first) + " != " + str(second))
+
+    def test_should_correct_diacritics_at_first(self):
+        self.words_provider.initialize({"że": 21,
+                                        "za": 30})
 
         corrected = self.sut.correction("ze")
         self.assert_equal_utf("że", corrected)
+
+    def test_should_choose_most_frequenc_word(self):
+        self.words_provider.initialize({"tata": 130,
+                                        "taca": 44,
+                                        "tara": 29})
+
+        corrected = self.sut.correction("taya")
+        self.assert_equal_utf("tata", corrected)
+
+    def test_should_choose_edit2_if_no_edit1_available(self):
+        self.words_provider.initialize({"lampka": 101,
+                                        "choinka": 50})
+
+        corrected = self.sut.correction("honika")
+        self.assert_equal_utf("choinka", corrected)
+
+
+    def test_should_choose_edit1_if_exist(self):
+        self.words_provider.initialize({"lampka": 101,
+                                        "choinka": 50,
+                                        'konika': 5})
+
+        corrected = self.sut.correction("honika")
+        self.assert_equal_utf("konika", corrected)
 
 if __name__ == '__main__':
     unittest.main()

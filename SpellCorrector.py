@@ -25,11 +25,11 @@ class SpellCorrector(object):
         return sort_cands[0]
 
     def _add_diacritics(self, word):
-        pl_edits1 = self._add_edit1_diacritics(word)
-        pl_edits2 = (e2 for e1 in pl_edits1 for e2 in self._add_edit1_diacritics(e1))
+        pl_edits1 = self._edit1_diacritics(word)
+        pl_edits2 = (e2 for e1 in pl_edits1 for e2 in self._edit1_diacritics(e1))
         return pl_edits1.union(pl_edits2)
 
-    def _add_edit1_diacritics(self, word):
+    def _edit1_diacritics(self, word):
         pairs = {
             'a': 'ą',
             'c': 'ć',
