@@ -1,0 +1,15 @@
+class MockKnownWordsProvider(object):
+    def __init__(self):
+        self.words = dict()
+        self.N = 1
+
+    def initialize(self, words):
+        self.words = words
+        self.N = len(self.words)
+
+    def known(self, words):
+        return set(w for w in words if w in self.words)
+
+    def P(self, word):
+        p = self.words[word] / self.N if word in self.words else 0
+        return p
