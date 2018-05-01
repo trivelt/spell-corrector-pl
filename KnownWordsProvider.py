@@ -1,4 +1,4 @@
-from NGramsUtils import line_to_pair
+from NGramsUtils import *
 
 
 class KnownWordsProviderUsingRAM(object):
@@ -80,18 +80,27 @@ class KnownWordsProviderUsingBigFile(object):
 
 
 class KnownWordsProviderUsingMultipleFiles(object):
-    def __init__(self):
+    def __init__(self, load_to_ram=True):
         self.words = dict()
         self.N = 194095426.0
         self.unigrams_dir = None
+        self.load_to_ram = load_to_ram
 
     def initialize(self, unigrams_dir):
         self.unigrams_dir = unigrams_dir
 
     def known(self, words):
+        if self.load_to_ram:
+            return self.known_with_ram(words)
+        else:
+            return self.known_basic(words)
+
+    def known_with_ram(self, words):
         known_words = list()
-        for word in words:
-            first_letter = word[0]
+        words_groups = split_words_by_first_letter(words)
+        for group in words_groups:
+            known_words_letter = dict()
+            first_letter = group[0][0]
             if first_letter in 'abcdefghijklmnopqrstuvwxyz':
                 file_name = self.unigrams_dir + "/1grams_" + first_letter
             else:
@@ -100,14 +109,35 @@ class KnownWordsProviderUsingMultipleFiles(object):
             f = open(file_name, 'r')
             for line in f:
                 freq, known_word = line_to_pair(line)
-                if known_word == word:
-                    known_words.append(word)
-                    self.words[word] = freq
+                known_words_letter[known_word] = freq
             f.close()
+
+            known_words_in_group = [w for w in group if w in known_words_letter]
+            known_words.extend(known_words_in_group)
+
+            for w in known_words_in_group:
+                self.words[w] = known_words_letter[w]
+
         return set(known_words)
 
-    def _split_words_by_first_letter(self, words):
-        return words
+    def known_basic(self, words):
+        known_words = list()
+        words_groups = split_words_by_first_letter(words)
+        for group in words_groups:
+            first_letter = group[0][0]
+            if first_letter in 'abcdefghijklmnopqrstuvwxyz':
+                file_name = self.unigrams_dir + "/1grams_" + first_letter
+            else:
+                file_name = self.unigrams_dir + "/1grams_other"
+
+            f = open(file_name, 'r')
+            for line in f:
+                freq, known_word = line_to_pair(line)
+                if known_word in group:
+                    known_words.append(known_word)
+                    self.words[known_word] = freq
+            f.close()
+        return set(known_words)
 
     def P(self, word):
         if word in self.words:

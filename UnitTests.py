@@ -104,6 +104,17 @@ class NGramsUtilsTest(unittest.TestCase):
         _, word = NGramsUtils.line_to_pair(line)
         self.assertEqual("test", word)
 
+    def test_should_split_words_list_by_first_letter(self):
+        words = ['cześć', 'czapka', 'cały', 'test', 'taras']
+        splitted_list = NGramsUtils.split_words_by_first_letter(words)
+        self.assertEqual(2, len(splitted_list))
+        self.assertTrue(['cześć', 'czapka', 'cały'] in splitted_list)
+        self.assertTrue(['test', 'taras'] in splitted_list)
+
+    def test_should_return_empty_list_for_no_words(self):
+        result = NGramsUtils.split_words_by_first_letter([])
+        self.assertEqual(0, len(result))
+
 
 if __name__ == '__main__':
     unittest.main()
