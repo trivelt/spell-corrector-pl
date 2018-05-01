@@ -77,3 +77,41 @@ class KnownWordsProviderUsingBigFile(object):
             return p
         else:
             return 0
+
+
+class KnownWordsProviderUsingMultipleFiles(object):
+    def __init__(self):
+        self.words = dict()
+        self.N = 194095426.0
+        self.unigrams_dir = None
+
+    def initialize(self, unigrams_dir):
+        self.unigrams_dir = unigrams_dir
+
+    def known(self, words):
+        known_words = list()
+        for word in words:
+            first_letter = word[0]
+            if first_letter in 'abcdefghijklmnopqrstuvwxyz':
+                file_name = self.unigrams_dir + "/1grams_" + first_letter
+            else:
+                file_name = self.unigrams_dir + "/1grams_other"
+
+            f = open(file_name, 'r')
+            for line in f:
+                freq, known_word = line_to_pair(line)
+                if known_word == word:
+                    known_words.append(word)
+                    self.words[word] = freq
+            f.close()
+        return set(known_words)
+
+    def _split_words_by_first_letter(self, words):
+        return words
+
+    def P(self, word):
+        if word in self.words:
+            p = self.words[word] / self.N
+            return p
+        else:
+            return 0
