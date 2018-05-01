@@ -37,11 +37,6 @@ class UnigramsSplitter(object):
         for elem in fds:
             fds[elem].close()
 
-    def _all_chars_are_letters(self, word):
-        # letters = 'aąbcćdeęfghijklłmnńoópqrsśtuvwxyzżź'
-        letters = 'abcdefghijklmnopqrstuvwxyz'
-        return all(char in letters for char in word)
-
     def _print_line_number(self):
         self.line_counter += 1
         if self.line_counter % 100000 == 0:
