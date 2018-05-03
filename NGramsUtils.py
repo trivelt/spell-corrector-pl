@@ -5,6 +5,10 @@ def line_to_pair(line):
     return frequency, unicode(word, 'utf-8')
 
 
+def line_to_bigram_pair(line):
+    return line
+
+
 def split_words_by_first_letter(words):
     splitted_words = dict()
     for word in words:

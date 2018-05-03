@@ -42,12 +42,9 @@ class SpellCorrector(object):
             return sorted_candidates[0]
 
     def _correct_using_bigrams(self, sorted_candidates, previous_word):
-        known_bigrams = dict()
-        for word in sorted_candidates:
-            if self.bp.known(word, previous_word):
-                known_bigrams[word] = self.bp.P(word, previous_word)
+        known_bigrams = self.bp.known(sorted_candidates, previous_word)
         if len(known_bigrams) > 0:
-            sorted_bigrams = sorted(known_bigrams, key=known_bigrams.get, reverse=True)
+            sorted_bigrams = sorted(known_bigrams, key=lambda w: self.bp.P(" ".join([previous_word, w])), reverse=True)
             return sorted_bigrams[0]
         else:
             return sorted_candidates[0]
