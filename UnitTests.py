@@ -3,6 +3,7 @@
 
 import unittest
 from MockKnownWordsProvider import MockKnownWordsProvider
+from MockBigramsProvider import MockBigramsProvider
 from SpellCorrector import SpellCorrector
 import NGramsUtils
 
@@ -105,7 +106,7 @@ class SpellCorrectorCorrectionTest(SpellCorrectorTestBase):
 class SpellCorrectorSentenceCorrectionBigramsTest(SpellCorrectorTestBase):
     def setUp(self):
         self.words_provider = MockKnownWordsProvider()
-        self.bigrams_provider = MockKnownWordsProvider()
+        self.bigrams_provider = MockBigramsProvider()
         self.sut = SpellCorrector(self.words_provider, self.bigrams_provider)
 
     def test_should_choose_word_existing_in_bigrams(self):

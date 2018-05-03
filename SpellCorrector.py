@@ -41,8 +41,16 @@ class SpellCorrector(object):
         else:
             return sorted_candidates[0]
 
-    def _correct_using_bigrams(self, candidates, previous_word):
-        return candidates[0]
+    def _correct_using_bigrams(self, sorted_candidates, previous_word):
+        known_bigrams = dict()
+        for word in sorted_candidates:
+            if self.bp.known(word, previous_word):
+                known_bigrams[word] = self.bp.P(word, previous_word)
+        if len(known_bigrams) > 0:
+            sorted_bigrams = sorted(known_bigrams, key=known_bigrams.get, reverse=True)
+            return sorted_bigrams[0]
+        else:
+            return sorted_candidates[0]
 
     def _add_diacritics(self, word):
         pl_edits1 = self._edit1_diacritics(word)
