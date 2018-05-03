@@ -11,23 +11,22 @@ class BigramsProvider(object):
 
     def known(self, words, previous_word):
         known_words = list()
-        print("HERE!")
-        words_groups = split_words_by_first_letter(words)
-        for group in words_groups:
-            first_letter = group[0][0]
-            if first_letter in 'abcdefghijklmnopqrstuvwxyz':
-                file_name = self.bigrams_dir + "/2grams_" + first_letter
-            else:
-                file_name = self.bigrams_dir + "/2grams_other"
+        # print("HERE!")
+        first_letter = previous_word[0]
+        if first_letter in 'abcdefghijklmnopqrstuvwxyz':
+            file_name = self.bigrams_dir + "/2grams_" + first_letter
+        else:
+            file_name = self.bigrams_dir + "/2grams_other"
 
-            f = open(file_name, 'r')
-            for line in f:
-                freq, bigram = line_to_bigram_pair(line)
-                for w in group:
-                    if w == bigram[1]:
-                        self.bigrams[previous_word + " " + w] = freq
-                        known_words.append(w)
-            f.close()
+        f = open(file_name, 'r')
+        for line in f:
+            freq, bigram = line_to_bigram_pair(line)
+            for w in words:
+                if bigram[0] == previous_word and w == bigram[1]:
+                    print("Append word=" + w + ", bigram[0]=" + bigram[0])
+                    self.bigrams[previous_word + " " + w] = freq
+                    known_words.append(w)
+        f.close()
         return known_words
 
     def P(self, bigram):

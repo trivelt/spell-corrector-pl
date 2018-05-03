@@ -45,7 +45,8 @@ class SpellCorrector(object):
         known_bigrams = self.bp.known(sorted_candidates, previous_word)
         if len(known_bigrams) > 0:
             sorted_bigrams = sorted(known_bigrams, key=lambda w: self.bp.P(" ".join([previous_word, w])), reverse=True)
-            return sorted_bigrams[0]
+            # print("Sorted bigrams: " + str(sorted_bigrams))
+            return sorted_bigrams[0] # TODO if not P[0] > P[1], check length of words
         else:
             return sorted_candidates[0]
 

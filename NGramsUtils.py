@@ -6,8 +6,20 @@ def line_to_pair(line):
 
 
 def line_to_bigram_pair(line):
-    return line
-
+    line = unicode(line, 'utf-8')
+    line = line.replace(',', '')
+    line = line.replace('.', '')
+    line = line.replace('!', '')
+    splitted_line = line.split()
+    # print("Splitted line=" + str(splitted_line))
+    if len(splitted_line) < 2:
+        return 0, ('', '')
+    frequency = int(splitted_line[0])
+    first_word = splitted_line[1]
+    if len(splitted_line) == 2:
+        return frequency, (first_word, "")
+    second_word = splitted_line[2]
+    return frequency, (first_word, second_word)
 
 def split_words_by_first_letter(words):
     splitted_words = dict()
