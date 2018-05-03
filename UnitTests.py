@@ -13,9 +13,11 @@ class SpellCorrectorEditsTest(unittest.TestCase):
         self.sut = SpellCorrector(self.words_provider)
 
     def assert_contains_list(self, container, member_list, print_container=True):
-        container_members_str = '[' + ", ".join([str(elem) for elem in container]) + ']' if print_container else "container"
+        container_members_str = '[' + ", ".join([elem.encode('utf-8') for elem in container]) + ']' if print_container else "container"
         for member in member_list:
-            self.assertIn(member, container, str(member) + " not in " + container_members_str)
+            if not isinstance(member, unicode):
+                member = unicode(member, 'utf-8')
+            self.assertIn(member, container, member.encode('utf-8') + " not in " + container_members_str)
 
     def test_edit1(self):
         word = "hello"
@@ -23,8 +25,8 @@ class SpellCorrectorEditsTest(unittest.TestCase):
 
         deletes = ('ello', 'hllo', 'helo', 'hell')
         transposes = ('ehllo', 'hlelo', 'hello', 'helol')
-        replaces = ('jello', 'hallo', 'helko', 'healo')
-        inserts = ('heello', 'hhello', 'helllo', 'hellou')
+        replaces = ('jello', 'hallo', 'helko', 'healo', 'hęllo')
+        inserts = ('heello', 'hhello', 'helllo', 'hellou', 'helloż')
 
         self.assert_contains_list(result, deletes)
         self.assert_contains_list(result, transposes)
@@ -36,6 +38,10 @@ class SpellCorrectorEditsTest(unittest.TestCase):
         result = self.sut._edits2(word)
 
         example_edits = ('hekko', 'tallo', 'hhhllo', 'belko')
+        self.assert_contains_list(result, example_edits, print_container=True)
+
+        result = self.sut._edits2("komputeruf")
+        example_edits = ('komputerów', 'omputeruf')
         self.assert_contains_list(result, example_edits, print_container=False)
 
     def test_diacritics_words(self):
@@ -59,7 +65,8 @@ class SpellCorrectorCorrectionTest(unittest.TestCase):
         self.sut = SpellCorrector(self.words_provider)
 
     def assert_equal_utf(self, first, second):
-        self.assertEqual(first, second, str(first) + " != " + str(second))
+        first = unicode(first, 'utf-8')
+        self.assertEqual(first, second, first.encode('utf-8') + " != " + second.encode('utf-8'))
 
     def test_should_correct_diacritics_at_first(self):
         self.words_provider.initialize({"że": 21,
@@ -68,7 +75,7 @@ class SpellCorrectorCorrectionTest(unittest.TestCase):
         corrected = self.sut.correction("ze")
         self.assert_equal_utf("że", corrected)
 
-    def test_should_choose_most_frequenc_word(self):
+    def test_should_choose_most_frequent_word(self):
         self.words_provider.initialize({"tata": 130,
                                         "taca": 44,
                                         "tara": 29})

@@ -20,25 +20,28 @@ class SpellCorrector(object):
             return known_word or self.wp.known(self._edits1(word)) or self.wp.known(self._edits2(word)) or [word]
 
     def correction(self, word):
-        cands = self._candidates(word)
-        sort_cands = list(sorted(cands, key=self.wp.P, reverse=True))  # TODO: WHY REVERSE?
-        return sort_cands[0]
+        if not isinstance(word, unicode):
+            word = unicode(word, 'utf-8')
+
+        candidates = self._candidates(word)
+        sorted_candidates = list(sorted(candidates, key=self.wp.P, reverse=True))  # TODO: WHY REVERSE?
+        return sorted_candidates[0]
 
     def _add_diacritics(self, word):
         pl_edits1 = self._edit1_diacritics(word)
-        pl_edits2 = (e2 for e1 in pl_edits1 for e2 in self._edit1_diacritics(e1))
+        pl_edits2 = list(e2 for e1 in pl_edits1 for e2 in self._edit1_diacritics(e1))
         return pl_edits1.union(pl_edits2)
 
     def _edit1_diacritics(self, word):
         pairs = {
-            'a': 'ą',
-            'c': 'ć',
-            'e': 'ę',
-            'l': 'ł',
-            'n': 'ń',
-            'o': 'ó',
-            's': 'ś',
-            'z': 'ż'#, 'ź']
+            u'a': u'ą',
+            u'c': u'ć',
+            u'e': u'ę',
+            u'l': u'ł',
+            u'n': u'ń',
+            u'o': u'ó',
+            u's': u'ś',
+            u'z': u'ż'#, 'ź']
         }
 
         splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
@@ -50,7 +53,7 @@ class SpellCorrector(object):
         return set(e1)
 
     def _edits1(self, word):
-        letters    = 'aąbcćdeęfghijklłmnńoópqrsśtuvwxyzżź'
+        letters    = u'aąbcćdeęfghijklłmnńoópqrsśtuvwxyzżź'
         splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
         deletes    = [L + R[1:]               for L, R in splits if R]
         transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
@@ -59,4 +62,4 @@ class SpellCorrector(object):
         return set(deletes + transposes + replaces + inserts)
 
     def _edits2(self, word):
-        return (e2 for e1 in self._edits1(word) for e2 in self._edits1(e1))
+        return list(e2 for e1 in self._edits1(word) for e2 in self._edits1(e1))

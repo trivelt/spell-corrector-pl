@@ -4,7 +4,7 @@ class MockKnownWordsProvider(object):
         self.N = 1
 
     def initialize(self, words):
-        self.words = words
+        self.words = {unicode(word, 'utf-8'): freq for word, freq in words.items()}
         self.N = float(sum(words.values()))
 
     def known(self, words):
