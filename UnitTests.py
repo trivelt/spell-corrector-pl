@@ -59,14 +59,16 @@ class SpellCorrectorEditsTest(unittest.TestCase):
         self.assertFalse(word in result)
 
 
-class SpellCorrectorCorrectionTest(unittest.TestCase):
-    def setUp(self):
-        self.words_provider = MockKnownWordsProvider()
-        self.sut = SpellCorrector(self.words_provider)
-
+class SpellCorrectorTestBase(unittest.TestCase):
     def assert_equal_utf(self, first, second):
         first = unicode(first, 'utf-8')
         self.assertEqual(first, second, first.encode('utf-8') + " != " + second.encode('utf-8'))
+
+
+class SpellCorrectorCorrectionTest(SpellCorrectorTestBase):
+    def setUp(self):
+        self.words_provider = MockKnownWordsProvider()
+        self.sut = SpellCorrector(self.words_provider)
 
     def test_should_correct_diacritics_at_first(self):
         self.words_provider.initialize({"że": 21,
@@ -98,6 +100,30 @@ class SpellCorrectorCorrectionTest(unittest.TestCase):
 
         corrected = self.sut.correction("honika")
         self.assert_equal_utf("konika", corrected)
+
+
+class SpellCorrectorSentenceCorrectionBigramsTest(SpellCorrectorTestBase):
+    def setUp(self):
+        self.words_provider = MockKnownWordsProvider()
+        self.bigrams_provider = MockKnownWordsProvider()
+        self.sut = SpellCorrector(self.words_provider, self.bigrams_provider)
+
+    def test_should_choose_word_existing_in_bigrams(self):
+        self.words_provider.initialize({"panie": 50,
+                                        "pranie": 19})
+        self.bigrams_provider.initialize({"suszyć pranie": 15,
+                                          "suszyć ubranie": 10})
+        corrected = self.sut.sentence_correction("suszyć ptanie")
+        self.assert_equal_utf("suszyć pranie", corrected)
+
+    def test_should_choose_most_frequent_bigram(self):
+        self.words_provider.initialize({"komputer": 99,
+                                        "komputerów": 30,
+                                        "programowanie": 20})
+        self.bigrams_provider.initialize({"programowanie komputer": 1,
+                                          "programowanie komputerów": 3})
+        corrected = self.sut.sentence_correction("pogramowanie komputeruf")
+        self.assert_equal_utf("programowanie komputerów", corrected)
 
 
 class NGramsUtilsTest(unittest.TestCase):

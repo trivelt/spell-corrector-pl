@@ -7,8 +7,9 @@
 
 
 class SpellCorrector(object):
-    def __init__(self, words_provider):
+    def __init__(self, words_provider, bigrams_provider=None):
         self.wp = words_provider
+        self.bp = bigrams_provider
 
     def _candidates(self, word):
         diacritics_words = self.wp.known(self._add_diacritics(word))
@@ -19,13 +20,29 @@ class SpellCorrector(object):
         else:
             return known_word or self.wp.known(self._edits1(word)) or self.wp.known(self._edits2(word)) or [word]
 
-    def correction(self, word):
+    def sentence_correction(self, sentence):
+        words_to_correct = sentence.split()
+        corrected_sentence = ""
+        corrected_word = None
+        for word in words_to_correct:
+            corrected_word = self.correction(word, corrected_word)
+            corrected_sentence += corrected_word + " "
+        return corrected_sentence.rstrip()
+
+    def correction(self, word, previous_word=None):
         if not isinstance(word, unicode):
             word = unicode(word, 'utf-8')
 
         candidates = self._candidates(word)
         sorted_candidates = list(sorted(candidates, key=self.wp.P, reverse=True))  # TODO: WHY REVERSE?
-        return sorted_candidates[0]
+
+        if self.bp and previous_word:
+            return self._correct_using_bigrams(sorted_candidates, previous_word)
+        else:
+            return sorted_candidates[0]
+
+    def _correct_using_bigrams(self, candidates, previous_word):
+        return candidates[0]
 
     def _add_diacritics(self, word):
         pl_edits1 = self._edit1_diacritics(word)
