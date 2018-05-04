@@ -1,4 +1,5 @@
 from NGramsUtils import *
+import os
 
 
 class BigramsProvider(object):
@@ -11,29 +12,26 @@ class BigramsProvider(object):
 
     def known(self, words, previous_word):
         known_words = list()
-
-        if len(previous_word) < 2:
-            first_letter = previous_word[0]
-            file_name = self.bigrams_dir + "/2grams_other"
-            # file_name = self.bigrams_dir + "/2grams_" + first_letter
-        else:
-            first_letters = previous_word[:2]
-            letters = 'abcdefghijklmnopqrstuvwxyz'
-            if first_letters[0] in letters and first_letters[1] in letters:
-                file_name = self.bigrams_dir + "/2grams_" + first_letters
-            else:
-                file_name = self.bigrams_dir + "/2grams_other"
+        filename_ending = get_filename_for_word(previous_word)
+        if len(filename_ending) == 3:
+            filename_ending = filename_ending[:2]
+        file_name = os.path.join(self.bigrams_dir, "2grams_" + filename_ending)
 
         f = open(file_name, 'r')
         for line in f:
             freq, bigram = line_to_bigram_pair(line)
             for w in words:
                 if bigram[0] == previous_word and w == bigram[1]:
-                    print("Append word=" + w + ", bigram[0]=" + bigram[0])
-                    self.bigrams[previous_word + " " + w] = freq
+                    raw_bigram = previous_word + " " + w
+                    self._append_bigram(raw_bigram, freq)
                     known_words.append(w)
         f.close()
         return known_words
+
+    def _append_bigram(self, bigram, freq):
+        if bigram in self.bigrams and self.bigrams[bigram] > freq:
+            return
+        self.bigrams[bigram] = freq
 
     def P(self, bigram):
         if bigram in self.bigrams:
