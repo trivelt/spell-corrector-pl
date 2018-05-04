@@ -149,6 +149,36 @@ class NGramsUtilsTest(unittest.TestCase):
         result = NGramsUtils.split_words_by_first_letter([])
         self.assertEqual(0, len(result))
 
+    def test_should_return_filename_for_one_letter_word(self):
+        filename = NGramsUtils.get_filename_for_word("a")
+        self.assertEqual("a", filename)
+
+        filename = NGramsUtils.get_filename_for_word(".")
+        self.assertEqual("other", filename)
+
+    def test_should_return_filename_for_two_letters_word(self):
+        filename = NGramsUtils.get_filename_for_word(",a")
+        self.assertEqual("other", filename)
+
+        filename = NGramsUtils.get_filename_for_word("o!")
+        self.assertEqual("o", filename)
+
+        filename = NGramsUtils.get_filename_for_word("te")
+        self.assertEqual("te", filename)
+
+    def test_should_return_filename_for_minimum_three_letters_word(self):
+        filename = NGramsUtils.get_filename_for_word("...ba")
+        self.assertEqual("other", filename)
+
+        filename = NGramsUtils.get_filename_for_word("a!!!!")
+        self.assertEqual("a", filename)
+
+        filename = NGramsUtils.get_filename_for_word("ma,")
+        self.assertEqual("ma", filename)
+
+        filename = NGramsUtils.get_filename_for_word("masło")
+        self.assertEqual("mas", filename)
+
 
 if __name__ == '__main__':
     unittest.main()
