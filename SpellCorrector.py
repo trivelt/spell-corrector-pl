@@ -32,6 +32,8 @@ class SpellCorrector(object):
     def correction(self, word, previous_word=None):
         if not isinstance(word, unicode):
             word = unicode(word, 'utf-8')
+        if previous_word and not isinstance(previous_word, unicode):
+            previous_word = unicode(previous_word, 'utf-8')
 
         candidates = self._candidates(word)
         sorted_candidates = list(sorted(candidates, key=self.wp.P, reverse=True))  # TODO: WHY REVERSE?

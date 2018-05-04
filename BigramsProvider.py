@@ -11,12 +11,18 @@ class BigramsProvider(object):
 
     def known(self, words, previous_word):
         known_words = list()
-        # print("HERE!")
-        first_letter = previous_word[0]
-        if first_letter in 'abcdefghijklmnopqrstuvwxyz':
-            file_name = self.bigrams_dir + "/2grams_" + first_letter
-        else:
+
+        if len(previous_word) < 2:
+            first_letter = previous_word[0]
             file_name = self.bigrams_dir + "/2grams_other"
+            # file_name = self.bigrams_dir + "/2grams_" + first_letter
+        else:
+            first_letters = previous_word[:2]
+            letters = 'abcdefghijklmnopqrstuvwxyz'
+            if first_letters[0] in letters and first_letters[1] in letters:
+                file_name = self.bigrams_dir + "/2grams_" + first_letters
+            else:
+                file_name = self.bigrams_dir + "/2grams_other"
 
         f = open(file_name, 'r')
         for line in f:
