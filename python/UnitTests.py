@@ -114,7 +114,7 @@ class SpellCorrectorSentenceCorrectionBigramsTest(SpellCorrectorTestBase):
                                         "pranie": 19})
         self.bigrams_provider.initialize({"suszyć pranie": 15,
                                           "suszyć ubranie": 10})
-        corrected = self.sut.sentence_correction("suszyć ptanie")
+        corrected = self.sut.sentence_correction("suszyć ptanie", print_words=False)
         self.assert_equal_utf("suszyć pranie", corrected)
 
     def test_should_choose_most_frequent_bigram(self):
@@ -123,7 +123,7 @@ class SpellCorrectorSentenceCorrectionBigramsTest(SpellCorrectorTestBase):
                                         "programowanie": 20})
         self.bigrams_provider.initialize({"programowanie komputer": 1,
                                           "programowanie komputerów": 3})
-        corrected = self.sut.sentence_correction("pogramowanie komputeruf")
+        corrected = self.sut.sentence_correction("pogramowanie komputeruf", print_words=False)
         self.assert_equal_utf("programowanie komputerów", corrected)
 
 

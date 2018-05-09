@@ -5,6 +5,8 @@
 # Spelling corrector based on Peter Norvig's code
 # (https://norvig.com/spell-correct.html)
 
+import sys
+
 
 class SpellCorrector(object):
     def __init__(self, words_provider, bigrams_provider=None):
@@ -20,12 +22,15 @@ class SpellCorrector(object):
         else:
             return known_word or self.wp.known(self._edits1(word)) or self.wp.known(self._edits2(word)) or [word]
 
-    def sentence_correction(self, sentence):
+    def sentence_correction(self, sentence, print_words=True):
         words_to_correct = sentence.split()
         corrected_sentence = ""
         corrected_word = None
         for word in words_to_correct:
             corrected_word = self.correction(word, corrected_word)
+            if print_words:
+                sys.stdout.write(corrected_word + " ")
+                sys.stdout.flush()
             corrected_sentence += corrected_word + " "
         return corrected_sentence.rstrip()
 
