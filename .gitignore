@@ -1,3 +1,6 @@
 *.pyc
 n-grams/*
 *~
+*.cmi
+*.cmo
+*.out
