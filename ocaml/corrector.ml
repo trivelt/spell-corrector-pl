@@ -145,17 +145,26 @@ let edits2 word =
     let l_edits2 = List.map ~f:(fun word -> edits1 word) l_edits1 in
     flatten l_edits2
 
-let get_candidates word = 
-    edits1 word
+let known_word known_words word =
+    match Hashtbl.find known_words word with 
+        | None -> false
+        | Some _ -> true
 
-let get_known_candidates known_words candidates = 
-    List.filter candidates ~f:(fun x -> 
-        match Hashtbl.find known_words x with 
-            | None -> false
-            | Some _ -> true)
+let get_known_candidates known_words candidates =
+    List.filter candidates ~f:(known_word known_words)
 
-let sort_by_P known_words candidates = 
-    List.sort ~cmp:(fun a b -> 
+let get_candidates word known_words =
+    match known_word known_words word with
+        | true -> [word]
+        | false -> 
+            let known_edits1 = edits1 word |> get_known_candidates known_words in
+            if List.length known_edits1 = 0 then
+                edits2 word |> get_known_candidates known_words
+            else
+                known_edits1
+
+let sort_by_P known_words candidates =
+    List.sort ~cmp:(fun a b ->
         let a_P = Hashtbl.find known_words a in
         let b_P = Hashtbl.find known_words b in
         match a_P, b_P with
@@ -166,8 +175,7 @@ let sort_by_P known_words candidates =
     ) candidates
 
 let correction word known_words =
-    let candidates = get_candidates word in
-    let candidates = get_known_candidates known_words candidates in
+    let candidates = get_candidates word known_words in
 (*    let _ = print_list_sec candidates in *)
     let sorted_candidates = sort_by_P known_words candidates in
     if (List.length sorted_candidates) > 0 then
