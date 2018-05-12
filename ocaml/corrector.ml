@@ -16,12 +16,12 @@ let read_file filename =
     let words =  Hashtbl.create ~hashable:String.hashable () in
     let chan = In_channel.create filename in
     let num_of_line = ref 0 in
+    let () = print_string "Loading known words" in
     try
         while true; do
             num_of_line := !num_of_line + 1;
             if (!num_of_line % 100000) = 0 then
-                (print_int !num_of_line;
-                print_endline "");
+                (print_string "."; flush stdout);
 
             let line = input_line chan in
             let freq, word = line_to_pair line in
@@ -29,6 +29,7 @@ let read_file filename =
         done; words
     with End_of_file ->
         In_channel.close chan;
+        let () = print_endline " [OK]" in
         words
 
 let load_known_words () =
@@ -172,7 +173,7 @@ let correction word known_words =
     if (List.length sorted_candidates) > 0 then
         List.hd_exn sorted_candidates
     else
-        "Not found"
+        word
 
 (*    let is_known = Hashtbl.find known_words word in
     word
