@@ -51,24 +51,16 @@ class KnownWordsProviderUsingBigFile(object):
 
     def known(self, words):
         known_words = list()
-        for word in words:
-            if word in self.words:
-                known_words.append(word)
-            elif self._exists_in_file(word):
-                known_words.append(word)
-
-        return set(known_words)
-
-    def _exists_in_file(self, searched_word):
         if not self.unigrams_file_path:
             return False
         f = open(self.unigrams_file_path, 'r')
         for line in f:
             freq, word = line_to_pair(line)
-            if word == searched_word:
+            if word in words:
                 self.words[word] = freq
-                return True
+                known_words.append(word)
         f.close()
+        return set(known_words)
 
     def P(self, word):
         if word in self.words:
