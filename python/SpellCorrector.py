@@ -41,7 +41,7 @@ class SpellCorrector(object):
             previous_word = unicode(previous_word, 'utf-8')
 
         candidates = self._candidates(word)
-        sorted_candidates = list(sorted(candidates, key=self.wp.P, reverse=True))  # TODO: WHY REVERSE?
+        sorted_candidates = list(sorted(candidates, key=self.wp.P, reverse=True))
 
         if self.bp and previous_word:
             return self._correct_using_bigrams(sorted_candidates, previous_word)
@@ -52,7 +52,7 @@ class SpellCorrector(object):
         known_bigrams = self.bp.known(sorted_candidates, previous_word)
         if len(known_bigrams) > 0:
             sorted_bigrams = sorted(known_bigrams, key=lambda w: self.bp.P(" ".join([previous_word, w])), reverse=True)
-            return sorted_bigrams[0] # TODO if not P[0] > P[1], check length of words
+            return sorted_bigrams[0]
         else:
             return sorted_candidates[0]
 

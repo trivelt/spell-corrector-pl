@@ -22,7 +22,6 @@ class KnownWordsProviderUsingRAM(object):
     def P(self, word):
         if word in self.words:
             p = self.words[word] / self.N
-            # print("P(" + word + ")=" + str(p) + ", freq=" + str(self.words[word]))
             return p
         else:
             return 0
