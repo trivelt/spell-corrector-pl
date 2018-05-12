@@ -3,25 +3,18 @@ open Core
 open Core.Std
 module StringSet = Set.Make(String)
 
-
-let int_of_string_default str default =
-  try
-    int_of_string str
-  with Failure "int_of_string" -> default
-
-(* or return None/Some? *)
-let line_to_pair line =
-    let stripped_line = String.strip line in
+let line_to_pair line = 
+    let stripped_line = String.strip line in 
     let splitted_line = String.split stripped_line ~on:' ' in
-    let hd = List.hd_exn splitted_line in
-    let frequency = int_of_string_default hd 0 in
+    let hd = List.hd splitted_line in
     let word = List.nth splitted_line 1 in
-    frequency, Option.value_exn word
+    match hd, word with
+        | None, _ | _, None -> 0, ""
+        | Some x, Some y -> int_of_string x, y
 
-
-let read_file filename = 
+let read_file filename =
     let words =  Hashtbl.create ~hashable:String.hashable () in
-    let chan = In_channel.create filename in 
+    let chan = In_channel.create filename in
     let num_of_line = ref 0 in
     try
         while true; do
@@ -29,10 +22,9 @@ let read_file filename =
             if (!num_of_line % 100000) = 0 then
                 (print_int !num_of_line;
                 print_endline "");
-            
+
             let line = input_line chan in
             let freq, word = line_to_pair line in
-(*            print_endline ("Set " ^ word ^ " = " ^ (string_of_int freq)); *)
             Hashtbl.set words word freq
         done; words
     with End_of_file ->
