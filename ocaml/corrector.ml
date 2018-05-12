@@ -78,17 +78,6 @@ let replaces l_splits =
             (x_L ^ c ^ word_R) :: acc
     in change_splits l_splits [] replace_letter
 
-
-let append l1 l2 =
-  let rec loop acc l1 l2 =
-    match l1, l2 with
-    | [], [] -> List.rev acc
-    | [], h :: t -> loop (h :: acc) [] t
-    | h :: t, l -> loop (h :: acc) t l
-    in
-    loop [] l1 l2
-
-
 let flatten list =
   let rec aux accu = function
     | []          -> accu
@@ -171,10 +160,17 @@ let print_help () =
     exit 0
 
 let correct_phrase phrase known_words =
-    let corrected = correction phrase known_words in
-    print_endline corrected
+    let rec correct_words l_words =
+        match l_words with
+            | [] -> ()
+            | word :: tl -> 
+                let () = correction word known_words ^ " "|> print_string in
+                correct_words tl
+    in
+    let () = String.split phrase ~on:' ' |> correct_words in
+    print_endline ""
 
-let rec process_input_interactively known_words = 
+let rec process_input_interactively known_words =
     let () = print_string "> " in
     let text = read_line () in
     let () = correct_phrase text known_words in
