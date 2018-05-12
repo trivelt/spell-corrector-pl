@@ -179,7 +179,7 @@ let rec process_input_interactively known_words =
 let correct_input_phrase () =
     let phrase = get_input_phrase () in
     match phrase with
-        | "" -> print_help ()
+        | "" | "-h" -> print_help ()
         | phrase -> correct_phrase phrase (load_known_words ())
 
 let () =

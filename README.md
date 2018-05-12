@@ -42,9 +42,6 @@ optional arguments:
 #### Different WordsProvider to compare performance
 There are implemented three KnownWordsProviders (responsible for reading n-grams from file(s) and checking if specified word is known). Results of selected tests:
 
-./InteractiveCorrector.py -w zaba -t MultipleFiles
-real	0m0.275s
-
 
 | Word               | WordsProvider | Time  |
 | -------------        |:-----------------:| ------------|
