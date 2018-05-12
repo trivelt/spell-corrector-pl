@@ -31,7 +31,10 @@ let read_file filename =
         In_channel.close chan;
         words
 
-let rec splits word index l_splits = 
+let load_known_words () =
+    read_file "../n-grams/1grams_fixed"
+
+let rec splits word index l_splits =
     let length = String.length word in
     let word_L = String.sub word 0 index in
     let word_R = String.sub word index (length - index) in
@@ -161,8 +164,7 @@ let sort_by_P known_words candidates =
             | Some a, Some b -> b-a
     ) candidates
 
-let correction word =
-    let known_words = read_file "../n-grams/1grams_fixed" in
+let correction word known_words =
     let candidates = get_candidates word in
     let candidates = get_known_candidates known_words candidates in
 (*    let _ = print_list_sec candidates in *)
@@ -198,24 +200,24 @@ let print_help () =
     in
     exit 0
 
-let correct_phrase phrase =
-    let corrected = correction phrase in
+let correct_phrase phrase known_words =
+    let corrected = correction phrase known_words in
     print_endline corrected
 
-let rec process_input_interactively () = 
+let rec process_input_interactively known_words = 
     let () = print_string "> " in
     let text = read_line () in
-    let () = correct_phrase text in
-    process_input_interactively ()
+    let () = correct_phrase text known_words in
+    process_input_interactively known_words
 
 let correct_input_phrase () =
     let phrase = get_input_phrase () in
     match phrase with
         | "" -> print_help ()
-        | phrase -> correct_phrase phrase
+        | phrase -> correct_phrase phrase (load_known_words ())
 
 let () =
     match is_interactive_mode with
-        | true ->  process_input_interactively ()
+        | true ->  process_input_interactively (load_known_words ())
         | false -> correct_input_phrase ()
 
