@@ -1,4 +1,4 @@
-(* ocamlfind ocamlc str.cma -package core_extended -thread -linkpkg corrector.ml *)
+(* ocamlfind ocamlc -package core_extended -thread -linkpkg corrector.ml *)
 open Core
 open Core.Std
 module StringSet = Set.Make(String)
@@ -10,9 +10,9 @@ let int_of_string_default str default =
   with Failure "int_of_string" -> default
 
 (* or return None/Some? *)
-let line_to_pair line = 
-    let stripped_line = String.strip line in 
-    let splitted_line = Str.split (Str.regexp " ") stripped_line in
+let line_to_pair line =
+    let stripped_line = String.strip line in
+    let splitted_line = String.split stripped_line ~on:' ' in
     let hd = List.hd_exn splitted_line in
     let frequency = int_of_string_default hd 0 in
     let word = List.nth splitted_line 1 in
@@ -96,8 +96,8 @@ let transposes l_splits =
     ) l_splits
 
 
-let rec change_splits l_splits l_output f = 
-    let letters = Str.split (Str.regexp "") "abcdefghijklmnopqrstuvwxyz" in
+let rec change_splits l_splits l_output f =
+    let letters = String.to_list "abcdefghijklmnopqrstuvwxyz" |> List.map ~f:(fun x -> Char.to_string x) in
     match l_splits with
             | [] -> l_output
             | (x_L, x_R)::tl -> change_splits tl (l_output @ List.fold letters ~init:[] ~f:(f x_L x_R)) f
