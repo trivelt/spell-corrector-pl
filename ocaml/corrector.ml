@@ -176,12 +176,46 @@ let correction word =
     word
 *)
 
+let is_interactive_mode = 
+    match Array.find Sys.argv ~f:(fun arg -> arg = "-i") with
+        | None -> false
+        | Some _ -> true
 
-let () = 
-    let word = correction "pogramowanie" in
-    print_endline "OCaml Corrector";
-    print_endline word;
+let read_args () = 
+    for i = 0 to Array.length Sys.argv - 1 do
+      printf "[%i] %s\n" i Sys.argv.(i)
+    done
 
-    let s = splits "hello" 0 [] in
-    print_list s
+let get_input_phrase () =
+    match Array.length Sys.argv with
+        | 1 -> ""
+        | _ -> Array.get Sys.argv 1
+
+let print_help () =
+    let () = print_endline 
+        ("Usage: ./corector -i to run in interactive mode, " ^ 
+        "or ./corrector \"phrase to correct\" to use non-interactive mode")
+    in
+    exit 0
+
+let correct_phrase phrase =
+    let corrected = correction phrase in
+    print_endline corrected
+
+let rec process_input_interactively () = 
+    let () = print_string "> " in
+    let text = read_line () in
+    let () = correct_phrase text in
+    process_input_interactively ()
+
+let correct_input_phrase () =
+    let phrase = get_input_phrase () in
+    match phrase with
+        | "" -> print_help ()
+        | phrase -> correct_phrase phrase
+
+let () =
+    match is_interactive_mode with
+        | true ->  process_input_interactively ()
+        | false -> correct_input_phrase ()
 
