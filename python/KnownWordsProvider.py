@@ -28,11 +28,9 @@ class KnownWordsProviderUsingRAM(object):
 
 
 class KnownWordsProviderUsingBigFile(object):
-    def __init__(self, num_of_cached_words=10000):
+    def __init__(self):
         self.words = dict()
         self.N = 1.0
-        self.num_of_cached_words = num_of_cached_words
-        self.most_frequent = list()
         self.unigrams_file_path = None
 
     def initialize(self, unigrams_file_path):
@@ -45,22 +43,24 @@ class KnownWordsProviderUsingBigFile(object):
             line_count += 1
             freq, word = line_to_pair(line)
             self.N += freq
-            if line_count <= self.num_of_cached_words:
-                self.words[word] = freq
         f.close()
 
     def known(self, words):
-        known_words = list()
+        known_words = set()
+        words_to_check = set(words)
         if not self.unigrams_file_path:
             return False
         f = open(self.unigrams_file_path, 'r')
         for line in f:
             freq, word = line_to_pair(line)
-            if word in words:
+            if word in words_to_check:
                 self.words[word] = freq
-                known_words.append(word)
+                known_words.add(word)
+                words_to_check.remove(word)
+                if len(words_to_check) == 0:
+                    break
         f.close()
-        return set(known_words)
+        return known_words
 
     def P(self, word):
         if word in self.words:
