@@ -45,12 +45,12 @@ There are implemented three KnownWordsProviders (responsible for reading n-grams
 
 | Word               | WordsProvider | Time  |
 | -------------        |:-----------------:| ------------|
-| zaba                | RAM              | 0m2.134s |
-| zaba                | MultipleFiles  | 0m0.275s |
-| zaba                | BigFile           | 0m4.192s |
-| pogramowanie | RAM              | 0m2.158s |
-| pogramowanie | MultipleFiles  | 0m2.465s |
-| pogramowanie | BigFile           | 0m5.477s |
+| zaba                | RAM              | 0m1.941s |
+| zaba                | MultipleFiles  | 0m0.251s |
+| zaba                | BigFile           | 0m2.926s |
+| pogramowanie | RAM              | 0m1.970s |
+| pogramowanie | MultipleFiles  | 0m2.218s |
+| pogramowanie | BigFile           | 0m5.186s |
 
 
 ### 3) OCaml implementation
